@@ -13,8 +13,9 @@ permissions:
 jobs:
   run_job_with_aws:
     runs-on: ubuntu-latest
-    steps:
+    environment: infra-dev-setup
 
+    steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
