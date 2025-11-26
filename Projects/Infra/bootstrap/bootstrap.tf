@@ -29,7 +29,8 @@ module "iam_oidc_provider" {
 module "iam_role_github_oidc" {
   source = "terraform-aws-modules/iam/aws//modules/iam-role"
 
-  role_name = "GitHub-OIDC-RaaS-Deploy-Role"
+  role_name          = "GitHub-OIDC-RaaS-Deploy-Role"
+  enable_github_oidc = true
 
   trusted_oidc_providers = [
     module.iam_oidc_provider.arn
