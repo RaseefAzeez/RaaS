@@ -12,44 +12,48 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_iam_openid_connect_provider" "github" {
+module "iam_oidc_provider" {
+  source    = "terraform-aws-modules/iam/aws//modules/iam-oidc-provider"
+  version = "~> 6.0"
+
   url = "https://token.actions.githubusercontent.com"
-
-  client_id_list = [
-    "sts.amazonaws.com"
-  ]
-
-  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
-}
-
-
-#Github OIDC role creation for terraform to assume
-
-resource "aws_iam_role" "github_oidc_role_terraform" {
-  name = "GithubActionOIDCroleforTerraforms"
-
-  #trust policy is mentioned here
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = "sts:AssumeRoleWithWebIdentity",
-        Effect = "Allow",
-        Sid    = "",
-        Principal = {
-          Federated = aws_iam_openid_connect_provider.github.arn
-        }
-        Condition = {
-          StringLike = {
-            "token.actions.githubusercontent.com:sub" = ""
-          }
-        }
-      },
-    ]
-  })
+  client_id_list = ["sts.amazonaws.com"]
 
   tags = {
-    tag-key = "tag-value"
+    Terraform   = "true"
+    Environment = "dev"
   }
 }
 
+# Module for OIDC role with policy added with (admin access)
+module "iam_role_github_oidc" {
+  source    = "terraform-aws-modules/iam/aws//modules/iam-role"
+  
+    role_name = "GitHub-OIDC-RaaS-Deploy-Role"
+
+    trusted_oidc_providers = [
+    module.iam_oidc_provider.arn
+  ]
+    
+  # This should be updated to suit your organization, repository, references/branches, etc.
+  oidc_subjects = [
+    "RaseefAzeez/RaaS:ref:refs/heads/infra-dev-setup",
+    "RaseefAzeez/RaaS:ref:refs/heads/main"
+  ]
+
+  
+
+  policies = {
+    // S3ReadOnly = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+        TerraformFull = "arn:aws:iam::aws:policy/AdministratorAccess"
+  }
+
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}
+
+output "github_oidc_role_arn" {
+  value = module.iam_role_github_oidc.iam_role_arn
+}
