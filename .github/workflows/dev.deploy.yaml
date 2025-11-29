@@ -48,13 +48,19 @@ jobs:
           aws-region: us-east-1
 
       - name: Terraform Init
-        run: terraform init
+        run: |
+          cd Projects/Infra/bootstrap
+          terraform init
 
       - name: Terraform Plan
-        run: terraform plan
+        run: |
+          cd Projects/Infra/bootstrap
+          terraform plan
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: |
+          cd Projects/Infra/bootstrap
+          terraform apply -auto-approve
 
       - name: Additional steps
         run: |
