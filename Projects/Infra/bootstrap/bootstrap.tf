@@ -29,12 +29,17 @@ module "iam_oidc_provider" {
 module "iam_role_github_oidc" {
   source = "terraform-aws-modules/iam/aws//modules/iam-role"
 
-  role_name          = "GitHub-OIDC-RaaS-Deploy-Role"
+  //create             = true
+  name               = "GitHub-OIDC-RaaS-Deploy-Role"
   enable_github_oidc = true
 
-  trusted_oidc_providers = [
-    module.iam_oidc_provider.arn
-  ]
+  # oidc_provider_urls = [
+  #   "token.actions.githubusercontent.com"
+  # ]
+
+  # oidc_audiences = [
+  #   "sts.amazonaws.com"
+  # ]
 
   # This should be updated to suit your organization, repository, references/branches, etc.
   oidc_subjects = [
@@ -56,5 +61,5 @@ module "iam_role_github_oidc" {
 }
 
 output "github_oidc_role_arn" {
-  value = module.iam_role_github_oidc.iam_role_arn
+  value = module.iam_role_github_oidc.arn
 }
