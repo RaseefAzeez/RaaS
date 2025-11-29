@@ -22,6 +22,14 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
+      - name: Debug OIDC Token Claims
+        id: oidc
+        run: |
+          echo "Requesting OIDC token..."
+          TOKEN=$(curl -sSL -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL")
+          echo "$TOKEN" | jq .
+
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5 # Or a specific version
         with:
