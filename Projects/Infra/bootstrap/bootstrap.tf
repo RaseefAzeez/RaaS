@@ -42,10 +42,10 @@ module "iam_role_github_oidc" {
   # ]
 
   # This should be updated to suit your organization, repository, references/branches, etc.
-  oidc_subjects = [
-    "repo:RaseefAzeez/RaaS:ref:refs/heads/infra-dev-setup",
-    "repo:RaseefAzeez/RaaS:ref:refs/heads/main"
+  oidc_wildcard_subjects = [
+    "repo:RaseefAzeez/RaaS:ref:refs/heads/*"
   ]
+
 
 
 
