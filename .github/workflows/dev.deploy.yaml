@@ -24,11 +24,22 @@ jobs:
 
       - name: Debug OIDC Token Claims
         id: oidc
+        shell: bash
         run: |
           echo "Requesting OIDC token..."
-          TOKEN=$(curl -sSL -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL")
-          echo "$TOKEN" | jq .
+          RAW=$(curl -sSL -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL")
+          echo "RAW JSON:"
+          echo "$RAW" | jq .
 
+          TOKEN=$(echo "$RAW" | jq -r '.value')
+          echo "OIDC Token (JWT):"
+          echo "$TOKEN"
+
+          echo "===== DECODED HEADER ====="
+          echo "$TOKEN" | cut -d "." -f1 | base64 -d 2>/dev/null | jq .
+
+          echo "===== DECODED PAYLOAD ====="
+          echo "$TOKEN" | cut -d "." -f2 | base64 -d 2>/dev/null | jq .
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5 # Or a specific version
