@@ -50,7 +50,6 @@ module "iam_role_github_oidc" {
 
 
   policies = {
-    // S3ReadOnly = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
     TerraformFull = "arn:aws:iam::aws:policy/AdministratorAccess"
   }
 
