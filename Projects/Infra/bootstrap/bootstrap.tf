@@ -21,13 +21,7 @@ module "iam_role_github_oidc" {
   name               = "GitHub-OIDC-RaaS-Deploy-Role"
   enable_github_oidc = true
 
-  # oidc_provider_urls = [
-  #   "token.actions.githubusercontent.com"
-  # ]
 
-  # oidc_audiences = [
-  #   "sts.amazonaws.com"
-  # ]
 
   # This should be updated to suit your organization, repository, references/branches, etc.
   oidc_wildcard_subjects = [
