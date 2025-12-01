@@ -17,19 +17,12 @@ provider "aws" {
 module "iam_role_github_oidc" {
   source = "terraform-aws-modules/iam/aws//modules/iam-role"
 
-  //create             = true
   name               = "GitHub-OIDC-RaaS-Deploy-Role"
   enable_github_oidc = true
-
-
-
   # This should be updated to suit your organization, repository, references/branches, etc.
   oidc_wildcard_subjects = [
     "repo:RaseefAzeez/RaaS:environment:infra-dev-setup"
   ]
-
-
-
 
   policies = {
     TerraformFull = "arn:aws:iam::aws:policy/AdministratorAccess"
