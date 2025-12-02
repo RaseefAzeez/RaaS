@@ -21,7 +21,7 @@ module "iam_role_github_oidc" {
   use_name_prefix    = false
   enable_github_oidc = true
 
-  #This should be updated to suit your organization, repository, references/branches, etc.
+  #This should be updated to suit your organization, repository, references/branches
   oidc_wildcard_subjects = [
     "repo:RaseefAzeez/RaaS:environment:infra-dev-setup"
   ]
