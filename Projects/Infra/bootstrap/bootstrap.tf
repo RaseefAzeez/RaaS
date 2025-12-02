@@ -26,6 +26,9 @@ module "iam_role_github_oidc" {
     "repo:RaseefAzeez/RaaS:environment:infra-dev-setup"
   ]
 
+  oidc_audiences = ["https://github.com/RaseefAzeez"]
+
+
   policies = {
     TerraformFull = "arn:aws:iam::aws:policy/AdministratorAccess"
   }
