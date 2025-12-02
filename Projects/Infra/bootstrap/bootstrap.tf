@@ -45,25 +45,6 @@ resource "aws_s3_bucket" "terraform_state_bucket" {
   }
 }
 
-# #dynamodb table for terraform state locking
-# resource "aws_dynamodb_table" "basic-dynamodb-table" {
-#   name           = "lockstatefileTable"
-#   billing_mode   = "PROVISIONED"
-#   read_capacity  = 20
-#   write_capacity = 20
-#   hash_key       = "LockID"
-
-# attribute {
-#     name = "LockID"
-#     type = "S"
-#   }
-
-#   tags = {
-#     Name        = "dynamodb-lock-table"
-#     Environment = "dev"
-#   }
-# }
-
 
 output "github_oidc_role_arn" {
   value = module.iam_role_github_oidc.arn
