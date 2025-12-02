@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-# Configure the AWS Provider here
+# Configure the AWS Provider
 provider "aws" {
   region = "us-east-1"
 }
@@ -18,9 +18,10 @@ module "iam_role_github_oidc" {
   source = "terraform-aws-modules/iam/aws//modules/iam-role"
 
   name               = "GitHub-OIDC-RaaS-Deploy-Role"
-  use_name_prefix = false
+  use_name_prefix    = false
   enable_github_oidc = true
-  # This should be updated to suit your organization, repository, references/branches, etc.
+
+  #This should be updated to suit your organization, repository, references/branches, etc.
   oidc_wildcard_subjects = [
     "repo:RaseefAzeez/RaaS:environment:infra-dev-setup"
   ]
