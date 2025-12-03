@@ -4,8 +4,6 @@
 data "aws_iam_policy_document" "lambda_trust" {
   statement {
     actions = ["sts:AssumeRole"]
-    sid = "LambdaExecutionRole-TrustPolicy"
-
     principals {
       type        = "Service"
       identifiers = ["lambda.amazonaws.com"]
@@ -14,8 +12,8 @@ data "aws_iam_policy_document" "lambda_trust" {
 }
 
 resource "aws_iam_role" "lambda_exe_role" {
-   assume_role_policy = data.aws_iam_policy_document.lambda_trust.json
-   name = "role-lambda-execution"
+  assume_role_policy = data.aws_iam_policy_document.lambda_trust.json
+  name               = "raas-lambda-execution-role"
 
 }
 
@@ -24,7 +22,7 @@ data "aws_iam_policy_document" "lambda_exe_policy_doc" {
     actions = [
       "ec2:RebootInstances",
       "ec2:StartInstances",
-        "ec2:StopInstances",
+      "ec2:StopInstances",
     ]
     resources = ["*"]
     effect    = "Allow"
@@ -43,7 +41,7 @@ data "aws_iam_policy_document" "lambda_exe_policy_doc" {
 
 
 resource "aws_iam_role_policy" "lambda_exec_policy" {
-    name = "${aws_iam_role.lambda_exe_role.name}-Inline"
-    role = aws_iam_role.lambda_exe_role.name
-    policy = data.aws_iam_policy_document.lambda_exe_policy_doc.json
+  name   = "${aws_iam_role.lambda_exe_role.name}-Inline"
+  role   = aws_iam_role.lambda_exe_role.name
+  policy = data.aws_iam_policy_document.lambda_exe_policy_doc.json
 }

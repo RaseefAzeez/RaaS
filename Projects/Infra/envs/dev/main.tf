@@ -11,3 +11,8 @@ terraform {
 provider "aws" {
   region = "us-east-1"
 }
+
+module "raas" {
+  source      = "../../modules/raas_core"
+  environment = "dev"
+}
