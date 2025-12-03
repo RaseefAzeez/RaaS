@@ -46,20 +46,21 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
+          audience: sts.amazonaws.com
 
       - name: Terraform Init
         run: |
-          cd Projects/Infra/bootstrap
+          cd Projects/Infra/envs/dev
           terraform init
 
       - name: Terraform Plan
         run: |
-          cd Projects/Infra/bootstrap
+          cd Projects/Infra/envs/dev
           terraform plan
 
       - name: Terraform Apply
         run: |
-          cd Projects/Infra/bootstrap
+          cd Projects/Infra/envs/dev
           terraform apply -auto-approve
 
       - name: Additional steps
