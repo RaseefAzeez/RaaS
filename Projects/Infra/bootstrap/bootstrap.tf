@@ -25,6 +25,7 @@ module "iam_role_github_oidc" {
   oidc_wildcard_subjects = [
     "repo:RaseefAzeez/RaaS:environment:infra-dev-setup"
   ]
+  oidc_audiences = ["sts.amazonaws.com"]
 
   # oidc_audiences = ["https://github.com/RaseefAzeez"]
 
