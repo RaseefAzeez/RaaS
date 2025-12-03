@@ -26,7 +26,7 @@ module "iam_role_github_oidc" {
     "repo:RaseefAzeez/RaaS:environment:infra-dev-setup"
   ]
 
-  oidc_audiences = ["https://github.com/RaseefAzeez"]
+  //oidc_audiences = ["https://github.com/RaseefAzeez"]
 
 
   policies = {
