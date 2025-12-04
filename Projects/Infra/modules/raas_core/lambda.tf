@@ -7,7 +7,7 @@ data "archive_file" "lambda_package" {
 # Lambda function definition
 resource "aws_lambda_function" "lambda_function_def" {
   filename         = data.archive_file.lambda_package.output_path
-  function_name    = "raas-lambda_function"
+  function_name    = "raas-${var.environment}-lambda_function"
   role             = aws_iam_role.lambda_exe_role.arn
   handler          = "index.handler"
   source_code_hash = data.archive_file.lambda_package.output_base64sha256
@@ -16,13 +16,13 @@ resource "aws_lambda_function" "lambda_function_def" {
 
   environment {
     variables = {
-      ENVIRONMENT = "dev"
+      ENVIRONMENT = var.environment
       LOG_LEVEL   = "info"
     }
   }
 
   tags = {
-    Environment = "dev"
+    Environment = var.environment
     Application = "RaaS"
   }
 }
