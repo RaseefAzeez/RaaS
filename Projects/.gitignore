@@ -18,3 +18,8 @@ crash.*.log
 # Sensitive variable files
 *.tfvars
 *.tfvars.json
+
+# Lambda function packages
+*.zip
+lambda/function.zip
+*.jar
