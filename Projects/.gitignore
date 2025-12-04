@@ -2,6 +2,7 @@
 terraform.tfstate
 terraform.tfstate.backup
 *.tfstate
+*.tfstate.*
 
 # Terraform directories
 .terraform/
@@ -13,3 +14,7 @@ terraform.tfstate.backup
 # Crash logs
 crash.log
 crash.*.log
+
+# Sensitive variable files
+*.tfvars
+*.tfvars.json
