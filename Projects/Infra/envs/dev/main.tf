@@ -1,10 +1,9 @@
 # Configure the AWS Provider
 provider "aws" {
-  region      = var.region
+  region = var.region
 }
 
 module "raas" {
   source      = "../../modules/raas_core"
-  environment = "${var.environment}"
-  
+  environment = var.environment
 }

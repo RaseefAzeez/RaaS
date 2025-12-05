@@ -6,5 +6,5 @@ provider "aws" {
 
 module "raas" {
   source      = "../../modules/raas_core"
-  environment = "${var.environment}"
+  environment = var.environment
 }
