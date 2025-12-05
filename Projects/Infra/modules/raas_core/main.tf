@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "lambda_trust" {
 
 resource "aws_iam_role" "lambda_exe_role" {
   assume_role_policy = data.aws_iam_policy_document.lambda_trust.json
-  name               = "raas-lambda-execution-role"
+  name               = "raas-${var.environment}-lambda-execution-role"
 
 }
 
