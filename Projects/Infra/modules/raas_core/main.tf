@@ -20,9 +20,11 @@ resource "aws_iam_role" "lambda_exe_role" {
 data "aws_iam_policy_document" "lambda_exe_policy_doc" {
   statement {
     actions = [
+      "ec2:DescribeInstances",
       "ec2:RebootInstances",
       "ec2:StartInstances",
       "ec2:StopInstances",
+      "ec2:DescribeTags"
     ]
     resources = ["*"]
     effect    = "Allow"

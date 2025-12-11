@@ -18,6 +18,8 @@ resource "aws_lambda_function" "lambda_function_def" {
     variables = {
       ENVIRONMENT = var.environment
       LOG_LEVEL   = "info"
+      GROUP_MAP = var.group_map
+      RBAC_MAP  = var.rbac_map
     }
   }
 
