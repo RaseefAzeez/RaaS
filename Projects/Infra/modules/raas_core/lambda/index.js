@@ -3,39 +3,45 @@ const ec2 = new AWS.EC2({ region: "us-east-1" });
 
 exports.handler = async (event) => {
   try {
-    const route = event.requestContext.http.path;
-    const method = event.requestContext.http.method;
+    // ===============================
+    // BASIC REQUEST INFO
+    // ===============================
+    const route = event.requestContext?.http?.path || "";
+    const method = event.requestContext?.http?.method || "";
 
-    // 🔐 Extract Cognito groups from JWT
-    const claims = event.requestContext.authorizer.jwt.claims;
+    // ===============================
+    // AUTH / GROUP INFO
+    // ===============================
+    const claims = event.requestContext?.authorizer?.jwt?.claims || {};
     const groups = claims["cognito:groups"] || [];
 
     if (!groups.length) {
       return response(403, { message: "User has no group assigned" });
     }
 
-    // We use the FIRST group as ownership scope
-    const userGroup = groups[0];
+    const isDevOps = groups.includes("devops");
+    const userGroup = groups[0]; // java / ui / devops
 
-    // =====================
+    // ===============================
     // GET /instances
-    // =====================
-    if (route === "/instances" && method === "GET") {
+    // ===============================
+    if (route.endsWith("/instances") && method === "GET") {
       const data = await ec2.describeInstances().promise();
-
       const instances = [];
 
       data.Reservations?.forEach(res => {
         res.Instances?.forEach(inst => {
-          const ownerTag = inst.Tags?.find(t => t.Key === "OwnerGroup");
+          const ownerTag = inst.Tags?.find(
+            t => t.Key === "OwnerGroup"
+          );
 
-          // ✅ Only include instances matching user's group
-          if (ownerTag?.Value === userGroup) {
+          // RBAC + ABAC enforcement
+          if (isDevOps || ownerTag?.Value === userGroup) {
             instances.push({
               instanceId: inst.InstanceId,
-              state: inst.State.Name,
+              state: inst.State?.Name,
               type: inst.InstanceType,
-              ownerGroup: ownerTag.Value
+              ownerGroup: ownerTag?.Value || "unknown"
             });
           }
         });
@@ -44,10 +50,10 @@ exports.handler = async (event) => {
       return response(200, instances);
     }
 
-    // =====================
+    // ===============================
     // POST /reboot
-    // =====================
-    if (route === "/reboot" && method === "POST") {
+    // ===============================
+    if (route.endsWith("/reboot") && method === "POST") {
       const body = JSON.parse(event.body || "{}");
       const instanceId = body.instanceId;
 
@@ -55,7 +61,7 @@ exports.handler = async (event) => {
         return response(400, { message: "instanceId is required" });
       }
 
-      // 🔍 Fetch instance tags
+      // Fetch instance to validate ownership
       const desc = await ec2.describeInstances({
         InstanceIds: [instanceId]
       }).promise();
@@ -67,12 +73,14 @@ exports.handler = async (event) => {
         return response(404, { message: "Instance not found" });
       }
 
-      const ownerTag = instance.Tags?.find(t => t.Key === "OwnerGroup");
+      const ownerTag = instance.Tags?.find(
+        t => t.Key === "OwnerGroup"
+      );
 
-      // 🔒 Enforce ownership
-      if (ownerTag?.Value !== userGroup) {
+      // Authorization check
+      if (!isDevOps && ownerTag?.Value !== userGroup) {
         return response(403, {
-          message: `Not authorized to reboot ${instanceId}`
+          message: "Not authorized to reboot this instance"
         });
       }
 
@@ -80,11 +88,22 @@ exports.handler = async (event) => {
         InstanceIds: [instanceId]
       }).promise();
 
+      // Audit log (recommended)
+      console.log({
+        user: claims.sub,
+        group: userGroup,
+        action: "reboot",
+        instanceId
+      });
+
       return response(200, {
         message: `Reboot triggered for ${instanceId}`
       });
     }
 
+    // ===============================
+    // FALLBACK
+    // ===============================
     return response(404, { message: "Route not found" });
 
   } catch (err) {
@@ -93,9 +112,9 @@ exports.handler = async (event) => {
   }
 };
 
-// =====================
-// Helper
-// =====================
+// ===============================
+// RESPONSE HELPER
+// ===============================
 function response(statusCode, body) {
   return {
     statusCode,
