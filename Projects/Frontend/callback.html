@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auth Callback</title>
+</head>
+<body>
+  <h3>Signing you in...</h3>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+
+    if (!code) {
+      document.body.innerHTML = "No authorization code found.";
+    } else {
+      console.log("Authorization code:", code);
+      // Next step: exchange code for tokens
+    }
+  </script>
+</body>
+</html>
