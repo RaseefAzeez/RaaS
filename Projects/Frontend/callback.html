@@ -1,21 +1,52 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Auth Callback</title>
 </head>
+
 <body>
   <h3>Signing you in...</h3>
 
   <script>
+
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
 
     if (!code) {
       document.body.innerHTML = "No authorization code found.";
     } else {
-      console.log("Authorization code:", code);
-      // Next step: exchange code for tokens
+      const verifier = sessionStorage.getItem("pkce_verifier");
+
+      fetch("https://us-east-1ddyxzzaiw.auth.us-east-1.amazoncognito.com/oauth2/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          client_id: "1u04hicg0bnlu48jg4nr701iid",
+          code: code,
+          redirect_uri: "http://localhost:5500/callback.html",
+          code_verifier: verifier
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.id_token) {
+            sessionStorage.setItem("id_token", data.id_token);
+            window.location.href = "/";
+          } else {
+            document.body.innerHTML = "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          document.body.innerHTML = "Token exchange failed.";
+        });
     }
+
   </script>
 </body>
+
 </html>
