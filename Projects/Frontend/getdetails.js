@@ -4,8 +4,8 @@
 
 const COGNITO_DOMAIN = "https://us-east-1ddyxzzaiw.auth.us-east-1.amazoncognito.com";
 const CLIENT_ID      = "1u04hicg0bnlu48jg4nr701iid";
-const REDIRECT_URI   = "https://localhost/callback";   // Must match Cognito app callback URL
-const API_URL        = "https://YOUR_API_URL/dev-stage";  // Example: https://abc123.execute-api.us-east-1.amazonaws.com/dev-stage
+const REDIRECT_URI   = "http://localhost:5500/callback";   // Must match Cognito app callback URL
+const API_URL        = "https://73ywsbsgmd.execute-api.us-east-1.amazonaws.com/dev-stage";  // Example: https://abc123.execute-api.us-east-1.amazonaws.com/dev-stage
 
 
 /* -------------------------------------------------------
