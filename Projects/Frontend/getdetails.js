@@ -1,5 +1,5 @@
 // ===============================
-// API CONFIG (ONLY BACKEND)
+// API CONFIG (HTTP API invoke URL)
 // ===============================
 const API_URL =
   "https://73ywsbsgmd.execute-api.us-east-1.amazonaws.com/dev-stage";
@@ -8,15 +8,15 @@ const API_URL =
 // BUTTON HANDLERS
 // ===============================
 document.getElementById("btn-status")
-  ?.addEventListener("click", getStatus);
+  ?.addEventListener("click", getInstances);
 
 document.getElementById("btn-reboot")
   ?.addEventListener("click", rebootInstance);
 
 // ===============================
-// FETCH EC2 STATUS
+// FETCH EC2 INSTANCES
 // ===============================
-async function getStatus() {
+async function getInstances() {
   const token = sessionStorage.getItem("id_token");
   const output = document.getElementById("status-output");
 
@@ -26,7 +26,8 @@ async function getStatus() {
   }
 
   try {
-    const res = await fetch(`${API_URL}/status`, {
+    const res = await fetch(`${API_URL}/instances`, {
+      method: "GET",
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -34,9 +35,10 @@ async function getStatus() {
 
     const data = await res.json();
     output.textContent = JSON.stringify(data, null, 2);
+
   } catch (err) {
-    console.error(err);
-    output.textContent = "Failed to fetch instance status.";
+    console.error("Fetch instances failed:", err);
+    output.textContent = "Failed to fetch EC2 instances.";
   }
 }
 
@@ -46,7 +48,7 @@ async function getStatus() {
 async function rebootInstance() {
   const token = sessionStorage.getItem("id_token");
   const instanceId =
-    document.getElementById("instance-id").value;
+    document.getElementById("instance-id").value.trim();
   const output =
     document.getElementById("reboot-output");
 
@@ -72,8 +74,9 @@ async function rebootInstance() {
 
     const data = await res.json();
     output.textContent = JSON.stringify(data, null, 2);
+
   } catch (err) {
-    console.error(err);
+    console.error("Reboot failed:", err);
     output.textContent = "Failed to reboot instance.";
   }
 }

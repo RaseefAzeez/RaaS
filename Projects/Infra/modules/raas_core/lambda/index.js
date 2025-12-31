@@ -6,20 +6,19 @@ const ec2 = new AWS.EC2();
   -----------------------------------------------
   - Uses JWT authorizer from Cognito User Pool
   - Extracts claims from requestContext.authorizer.jwt.claims
-  - Cognito groups come in: cognito:groups
-  - RBAC via EC2 team tag
-  - Supports:
+  - Cognito groups: cognito:groups
+  - RBAC via EC2 "team" tag
+  - Routes:
         GET  /instances
         POST /reboot
 */
 
 exports.handler = async (event) => {
   try {
-
     /* =======================================
        A. Load RBAC Configuration from env vars
        =======================================*/
-    const RBAC_MAP  = JSON.parse(process.env.RBAC_MAP || "{}");
+    const RBAC_MAP = JSON.parse(process.env.RBAC_MAP || "{}");
     const GROUP_MAP = JSON.parse(process.env.GROUP_MAP || "{}");
 
     /* ===================================
@@ -61,19 +60,20 @@ exports.handler = async (event) => {
     console.log("Allowed teams:", allowedTeams);
 
     /* =========================================
-       D. Route based on HTTP API v2 event format
-       ==========================================*/
+       D. Route handling (HTTP API v2)
+       =========================================*/
     const method = event.requestContext.http.method;
-    const path   = event.rawPath;
+    const path = event.rawPath;
 
+    // GET /instances
     if (method === "GET" && path === "/instances") {
       const instances = await listInstancesForTeams(allowedTeams);
       return response(200, { instances });
     }
 
+    // POST /reboot
     if (method === "POST" && path === "/reboot") {
       const body = JSON.parse(event.body || "{}");
-
       const instanceId = body.instance_id || body.instanceId;
 
       if (!instanceId) {
@@ -98,7 +98,7 @@ exports.handler = async (event) => {
 
 
 /* =======================================================
-   Helper: Return EC2 instances user is allowed to see
+   Helper: List EC2 instances user is allowed to see
    =======================================================*/
 async function listInstancesForTeams(allowedTeams) {
   const result = await ec2.describeInstances().promise();
@@ -113,7 +113,7 @@ async function listInstancesForTeams(allowedTeams) {
         visible.push({
           instanceId: instance.InstanceId,
           state: instance.State?.Name,
-          team: teamTag.Value,
+          team: teamTag.Value
         });
       }
     }
@@ -127,7 +127,9 @@ async function listInstancesForTeams(allowedTeams) {
    Helper: Reboot EC2 instance after RBAC verification
    =======================================================*/
 async function rebootInstanceWithRBAC(instanceId, allowedTeams) {
-  const result = await ec2.describeInstances({ InstanceIds: [instanceId] }).promise();
+  const result = await ec2
+    .describeInstances({ InstanceIds: [instanceId] })
+    .promise();
 
   const instance = result.Reservations?.[0]?.Instances?.[0];
   if (!instance) {
@@ -145,16 +147,19 @@ async function rebootInstanceWithRBAC(instanceId, allowedTeams) {
 
 
 /* ===========================================
-   Response helper (API Gateway HTTP API v2)
+   Response helper (HTTP API v2 + CORS)
    ===========================================*/
 function response(statusCode, body) {
   return {
     statusCode,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "http://localhost:5500",
+      "Access-Control-Allow-Headers": "Authorization,Content-Type",
+      "Access-Control-Allow-Methods": "GET,POST,OPTIONS"
+    },
     body: JSON.stringify(
       typeof body === "string" ? { error: body } : body
-    ),
-    headers: {
-      "Content-Type": "application/json"
-    }
+    )
   };
 }
