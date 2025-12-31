@@ -37,17 +37,16 @@
     })
       .then(res => res.json())
       .then(data => {
-        if (!data.id_token) {
-          throw new Error("No id_token returned");
+        if (!data.access_token || !data.id_token) {
+          throw new Error("Tokens missing from Cognito response");
         }
 
         sessionStorage.setItem("id_token", data.id_token);
+        sessionStorage.setItem("access_token", data.access_token);
+
         window.location.href = "index.html";
-      })
-      .catch(err => {
-        console.error(err);
-        document.body.innerHTML = "<h2>Token exchange failed</h2>";
       });
+
   </script>
 </body>
 
