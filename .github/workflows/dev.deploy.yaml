@@ -14,6 +14,17 @@ jobs:
   run_job_with_aws:
     runs-on: ubuntu-latest
     environment: infra-dev-setup
+    env:
+          TF_VAR_environment: ${{ secrets.TF_ENVIRONMENT }}
+          TF_VAR_region: ${{ secrets.TF_REGION }}
+
+          TF_VAR_instance_map: ${{ secrets.TF_INSTANCE_MAP }}
+          TF_VAR_group_map: ${{ secrets.TF_GROUP_MAP }}
+          TF_VAR_rbac_map: ${{ secrets.TF_RBAC_MAP }}
+          
+          TF_VAR_cognito_app_client_id: ${{ secrets.TF_COGNITO_APP_CLIENT_ID }}
+          TF_VAR_cognito_user_pool_id: ${{ secrets.TF_COGNITO_USER_POOL_ID }}
+          TF_VAR_frontend_origin: ${{ secrets.TF_FRONTEND_ORIGIN }}
 
     steps:
       - name: Checkout Repository
@@ -21,32 +32,13 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
-
-      - name: Debug OIDC Token Claims
-        id: oidc
-        shell: bash
-        run: |
-          echo "Requesting OIDC token..."
-          RAW=$(curl -sSL -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL")
-          echo "RAW JSON:"
-          echo "$RAW" | jq .
-
-          TOKEN=$(echo "$RAW" | jq -r '.value')
-          echo "OIDC Token (JWT):"
-          echo "$TOKEN"
-
-          echo "===== DECODED HEADER ====="
-          echo "$TOKEN" | cut -d "." -f1 | base64 -d 2>/dev/null | jq .
-
-          echo "===== DECODED PAYLOAD ====="
-          echo "$TOKEN" | cut -d "." -f2 | base64 -d 2>/dev/null | jq .
-
+        
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5 # Or a specific version
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: us-east-1
           audience: sts.amazonaws.com
+          aws-region: ${{ secrets.TF_REGION }}
 
       - name: Terraform Init
         run: |
@@ -54,17 +46,11 @@ jobs:
           terraform init
 
       - name: Terraform Plan
-        env:
-          TF_VAR_environment: dev
-          TF_VAR_region: us-east-1
         run: |
           cd Projects/Infra/envs/dev
           terraform plan
 
       - name: Terraform Apply
-        env:
-          TF_VAR_environment: dev
-          TF_VAR_region: us-east-1
         run: |
           cd Projects/Infra/envs/dev
           terraform apply -auto-approve
