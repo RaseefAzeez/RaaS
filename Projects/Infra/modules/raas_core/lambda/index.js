@@ -4,43 +4,58 @@ const ec2 = new AWS.EC2({ region: "us-east-1" });
 exports.handler = async (event) => {
   try {
     // ===============================
-    // BASIC REQUEST INFO
+    // REQUEST INFO (HTTP API v2)
     // ===============================
-    const route = event.requestContext?.http?.path || "";
-    const method = event.requestContext?.http?.method || "";
+    const path = event?.requestContext?.http?.path || "";
+    const method = event?.requestContext?.http?.method || "";
 
     // ===============================
-    // AUTH / GROUP INFO
+    // AUTH INFO (JWT Authorizer)
     // ===============================
-    const claims = event.requestContext?.authorizer?.jwt?.claims || {};
+    const claims = event?.requestContext?.authorizer?.jwt?.claims || {};
     const groups = claims["cognito:groups"] || [];
 
-    if (!groups.length) {
-      return response(403, { message: "User has no group assigned" });
+    // Hard fail if no groups
+    if (!Array.isArray(groups) || groups.length === 0) {
+      return response(403, { message: "User has no Cognito group assigned" });
     }
 
-    const isDevOps = groups.includes("devops");
-    const userGroup = groups[0]; // java / ui / devops
+    // Admin group (EXACT name)
+    const ADMIN_GROUP = "Devops-group";
+    const isAdmin = groups.includes(ADMIN_GROUP);
+
+    // ===============================
+    // DEBUG (safe – remove later)
+    // ===============================
+    console.log("AUTH_DEBUG", {
+      groups,
+      isAdmin,
+      path,
+      method
+    });
 
     // ===============================
     // GET /instances
     // ===============================
-    if (route.endsWith("/instances") && method === "GET") {
+    if (path.endsWith("/instances") && method === "GET") {
       const data = await ec2.describeInstances().promise();
       const instances = [];
 
-      data.Reservations?.forEach(res => {
-        res.Instances?.forEach(inst => {
-          const ownerTag = inst.Tags?.find(
+      data.Reservations?.forEach(reservation => {
+        reservation.Instances?.forEach(instance => {
+          const ownerTag = instance.Tags?.find(
             t => t.Key === "OwnerGroup"
           );
 
-          // RBAC + ABAC enforcement
-          if (isDevOps || ownerTag?.Value === userGroup) {
+          // Enforce RBAC + ABAC
+          if (
+            isAdmin ||
+            (ownerTag && groups.includes(ownerTag.Value))
+          ) {
             instances.push({
-              instanceId: inst.InstanceId,
-              state: inst.State?.Name,
-              type: inst.InstanceType,
+              instanceId: instance.InstanceId,
+              state: instance.State?.Name,
+              type: instance.InstanceType,
               ownerGroup: ownerTag?.Value || "unknown"
             });
           }
@@ -53,7 +68,7 @@ exports.handler = async (event) => {
     // ===============================
     // POST /reboot
     // ===============================
-    if (route.endsWith("/reboot") && method === "POST") {
+    if (path.endsWith("/reboot") && method === "POST") {
       const body = JSON.parse(event.body || "{}");
       const instanceId = body.instanceId;
 
@@ -61,7 +76,7 @@ exports.handler = async (event) => {
         return response(400, { message: "instanceId is required" });
       }
 
-      // Fetch instance to validate ownership
+      // Describe instance to validate ownership
       const desc = await ec2.describeInstances({
         InstanceIds: [instanceId]
       }).promise();
@@ -78,7 +93,10 @@ exports.handler = async (event) => {
       );
 
       // Authorization check
-      if (!isDevOps && ownerTag?.Value !== userGroup) {
+      if (
+        !isAdmin &&
+        (!ownerTag || !groups.includes(ownerTag.Value))
+      ) {
         return response(403, {
           message: "Not authorized to reboot this instance"
         });
@@ -88,11 +106,10 @@ exports.handler = async (event) => {
         InstanceIds: [instanceId]
       }).promise();
 
-      // Audit log (recommended)
-      console.log({
+      // Audit log
+      console.log("AUDIT_REBOOT", {
         user: claims.sub,
-        group: userGroup,
-        action: "reboot",
+        groups,
         instanceId
       });
 
@@ -107,7 +124,7 @@ exports.handler = async (event) => {
     return response(404, { message: "Route not found" });
 
   } catch (err) {
-    console.error("Lambda error:", err);
+    console.error("LAMBDA_ERROR", err);
     return response(500, { error: err.message });
   }
 };
