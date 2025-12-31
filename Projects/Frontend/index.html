@@ -4,140 +4,91 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <title>RaaS Dashboard</title>
 
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            // Define a custom maroon color (a deep, rich reddish-brown)
-            'maroon': {
+            maroon: {
               DEFAULT: '#800000',
-              '50': '#fdf2f2',
-              '100': '#f9e0e0',
-              '200': '#f2c3c3',
-              '300': '#e89797',
-              '400': '#da5f5f',
-              '500': '#c93434',
-              '600': '#b42626',
-              '700': '#800000',
-              '800': '#640000',
-              '900': '#4a0000',
-              '950': '#270000',
+              700: '#800000'
             },
-            'slate-light': '#f8fafc',
+            'slate-light': '#f8fafc'
           }
         }
       }
     }
   </script>
 
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+    crossorigin="anonymous" />
 
 </head>
 
 <body class="bg-slate-light font-sans text-gray-800">
 
+  <!-- ================= HEADER ================= -->
   <header class="relative bg-maroon-700 pb-20">
-    <div class="absolute inset-0 bg-maroon-700" style="clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);">
-    </div>
-
-    <div class="relative max-w-5xl mx-auto px-6 sm:px-8 lg:px-10 pt-10 pb-10 text-white">
-      <div class="flex items-center justify-between">
-        <h1 class="text-4xl font-awesome tracking-tight">RaaS <span
-            class="text-maroon-100 font-awesome text-xl">(Reboot-as-a-Service)</span></h1>
-        <div id="auth-buttons" class="text-sm"></div>
-      </div>
-      <p class="mt-2 text-maroon-100 opacity-90">Simple, secure EC2 management — list, check and reboot!</p>
+    <div class="relative max-w-5xl mx-auto px-6 pt-10 pb-10 text-white flex justify-between">
+      <h1 class="text-4xl font-bold">
+        RaaS <span class="text-xl text-maroon-100">(Reboot-as-a-Service)</span>
+      </h1>
+      <div id="auth-buttons"></div>
     </div>
   </header>
 
-  <main class="-mt-24 max-w-5xl mx-auto px-6 sm:px-8 lg:px-10 pb-16">
+  <!-- ================= MAIN ================= -->
+  <main class="-mt-24 max-w-5xl mx-auto px-6 pb-16">
 
-    <div
-      class="bg-white p-8 sm:p-10 rounded-2xl shadow-xl hover:shadow-2xl transition duration-300 mb-10 border border-gray-100">
-      <h2 class="text-2xl font-semibold mb-6 text-gray-800 border-b border-gray-200 pb-3">EC2 Instance Status Check</h2>
+    <!-- STATUS -->
+    <div class="bg-white p-8 rounded-2xl shadow-xl mb-10">
+      <h2 class="text-2xl font-semibold mb-6">EC2 Instance Status</h2>
 
-      <button id="btn-status"
-        class="w-full sm:w-auto px-8 py-3 bg-maroon-600 text-white font-bold rounded-xl shadow-lg shadow-maroon-300/50 hover:bg-maroon-700 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98]">
-        <i class="fas fa-sync-alt mr-3"></i> Retrieve Live Status
+      <button id="btn-status" class="px-8 py-3 bg-maroon-700 text-white rounded-xl font-bold">
+        Retrieve Status
       </button>
 
-      <pre id="status-output"
-        class="mt-8 bg-gray-900 text-green-400 p-6 rounded-xl border border-gray-700 overflow-x-auto text-sm font-mono whitespace-pre-wrap leading-relaxed"></pre>
+      <pre id="status-output" class="mt-6 bg-gray-900 text-green-400 p-6 rounded-xl text-sm"></pre>
     </div>
 
-    <div
-      class="bg-white p-8 sm:p-10 rounded-2xl shadow-xl hover:shadow-2xl transition duration-300 border border-gray-100">
-      <h2 class="text-2xl font-semibold mb-6 text-gray-800 border-b border-gray-200 pb-3">Reboot an Instance</h2>
+    <!-- REBOOT -->
+    <div class="bg-white p-8 rounded-2xl shadow-xl">
+      <h2 class="text-2xl font-semibold mb-6">Reboot Instance</h2>
 
-      <input id="instance-id" placeholder="Enter instance ID (e.g. i-0abc123def456)"
-        class="border-2 border-gray-300 focus:border-maroon-600 px-5 py-3 rounded-lg w-full mb-6 transition duration-200 focus:ring-2 focus:ring-maroon-100 outline-none"
-        type="text" />
+      <input id="instance-id" class="border px-4 py-3 rounded-lg w-full mb-4" placeholder="i-xxxxxxxxxxxx" />
 
-      <button id="btn-reboot"
-        class="w-full sm:w-auto px-8 py-3 bg-gray-600 text-white font-bold rounded-xl shadow-lg hover:bg-gray-700 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98]">
-        <i class="fas fa-power-off mr-3"></i> Trigger Reboot
+      <button id="btn-reboot" class="px-8 py-3 bg-gray-700 text-white rounded-xl font-bold">
+        Reboot
       </button>
 
-      <pre id="reboot-output"
-        class="mt-8 bg-gray-900 text-yellow-300 p-6 rounded-xl border border-gray-700 overflow-x-auto text-sm font-mono whitespace-pre-wrap leading-relaxed"></pre>
+      <pre id="reboot-output" class="mt-6 bg-gray-900 text-yellow-300 p-6 rounded-xl text-sm"></pre>
     </div>
 
   </main>
 
-  <footer class="mt-16 py-6 border-t border-gray-800 bg-[#111] shadow-[0_-2px_6px_rgba(0,0,0,0.3)]">
-    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between">
-
-      <!-- Text Section -->
-      <p class="text-gray-400 text-sm tracking-wide text-center md:text-left">
-        © 2025 RaaS · Created by Raseef Azeez · All rights reserved.
-      </p>
-
-      <!-- Social Icons -->
-      <div class="flex items-center space-x-5 mt-2 md:mt-0">
-
-        <a href="https://x.com/RaseefAzeez" target="_blank"
-          class="text-gray-500 hover:text-[#8B1E2D] transition-colors duration-300 flex items-center">
-          <i class="fab fa-x-twitter fa-lg"></i>
-        </a>
-
-        <a href="https://www.linkedin.com/in/raseef-azeez/" target="_blank"
-          class="text-gray-500 hover:text-[#8B1E2D] transition-colors duration-300 flex items-center">
-          <i class="fab fa-linkedin-in fa-lg"></i>
-        </a>
-
-        <a href="https://github.com/RaseefAzeez" target="_blank"
-          class="text-gray-500 hover:text-white transition-colors duration-300 flex items-center">
-          <i class="fab fa-github fa-lg"></i>
-        </a>
-
-      </div>
-
-    </div>
+  <!-- ================= FOOTER ================= -->
+  <footer class="mt-16 py-6 bg-black text-gray-400 text-center">
+    © 2025 RaaS · Created by Raseef Azeez
   </footer>
 
-
-  <!-- Cognito Auth / PKCE Login Script -->
-  <script src="./config.js"></script>
+  <!-- ================= AUTH CONFIG ================= -->
   <script>
+    const COGNITO_DOMAIN = "https://us-east-1ddyxzzaiw.auth.us-east-1.amazoncognito.com";
+    const CLIENT_ID = "5g8gugkm6cre8sjll45kjii9q6"; // NEW SPA CLIENT
+    const REDIRECT_URI = "http://localhost:5500/callback.html";
+  </script>
 
-
-    // const COGNITO_DOMAIN = "https://us-east-1ddyxzzaiw.auth.us-east-1.amazoncognito.com";
-    // const CLIENT_ID = "1u04hicg0bnlu48jg4nr701iid";
-    // const REDIRECT_URI = "http://localhost:5500/callback.html";
-
+  <!-- ================= PKCE + AUTH ================= -->
+  <script>
     const authButtons = document.getElementById("auth-buttons");
 
-    function base64UrlEncode(str) {
-      return btoa(str)
+    function base64UrlEncode(buffer) {
+      return btoa(String.fromCharCode(...new Uint8Array(buffer)))
         .replace(/\+/g, "-")
         .replace(/\//g, "_")
         .replace(/=+$/, "");
@@ -145,16 +96,20 @@
 
     async function sha256(plain) {
       const encoder = new TextEncoder();
-      const data = encoder.encode(plain);
-      const hash = await crypto.subtle.digest("SHA-256", data);
-      return base64UrlEncode(String.fromCharCode(...new Uint8Array(hash)));
+      return await crypto.subtle.digest("SHA-256", encoder.encode(plain));
+    }
+
+    function generateVerifier() {
+      const arr = new Uint8Array(32);
+      crypto.getRandomValues(arr);
+      return base64UrlEncode(arr);
     }
 
     async function login() {
-      const verifier = crypto.randomUUID() + crypto.randomUUID();
+      const verifier = generateVerifier();
       sessionStorage.setItem("pkce_verifier", verifier);
 
-      const challenge = await sha256(verifier);
+      const challenge = base64UrlEncode(await sha256(verifier));
 
       const loginUrl =
         `${COGNITO_DOMAIN}/oauth2/authorize` +
@@ -162,8 +117,8 @@
         `&response_type=code` +
         `&scope=openid+email+profile` +
         `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
-        `&code_challenge_method=S256` +
-        `&code_challenge=${challenge}`;
+        `&code_challenge=${challenge}` +
+        `&code_challenge_method=S256`;
 
       window.location.href = loginUrl;
     }
@@ -174,28 +129,17 @@
     }
 
     function renderAuthButtons() {
-      const token = sessionStorage.getItem("id_token");
+      const token = sessionStorage.getItem("access_token");
 
-      if (token) {
-        authButtons.innerHTML = `
-        <button onclick="logout()"
-          class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900">
-          Logout
-        </button>
-      `;
-      } else {
-        authButtons.innerHTML = `
-        <button onclick="login()"
-          class="px-4 py-2 bg-white text-maroon-700 font-bold rounded-lg hover:bg-gray-100">
-          Login
-        </button>
-      `;
-      }
+      authButtons.innerHTML = token
+        ? `<button onclick="logout()" class="px-4 py-2 bg-gray-800 text-white rounded">Logout</button>`
+        : `<button onclick="login()" class="px-4 py-2 bg-white text-maroon-700 rounded font-bold">Login</button>`;
     }
 
     renderAuthButtons();
   </script>
 
+  <!-- ================= API CALLS ================= -->
   <script src="./getdetails.js"></script>
 
 </body>

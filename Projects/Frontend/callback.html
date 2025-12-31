@@ -1,50 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-  <meta charset="UTF-8" />
-  <title>Cognito Callback</title>
+  <title>Callback</title>
 </head>
 
 <body>
-  <p>Signing you in…</p>
-
-  <script src="./config.js"></script>
+  <p>Logging you in…</p>
 
   <script>
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
 
     if (!code) {
-      document.body.innerHTML = "<h2>No authorization code found</h2>";
+      document.body.innerText = "No authorization code found.";
       throw new Error("No code");
     }
 
+    const tokenEndpoint =
+      "https://us-east-1ddyxzzaiw.auth.us-east-1.amazoncognito.com/oauth2/token";
+
+    const clientId = "5g8gugkm6cre8sjll45kjii9q6";
+    const redirectUri = "http://localhost:5500/callback.html";
+
     const verifier = sessionStorage.getItem("pkce_verifier");
 
-    fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
+    if (!verifier) {
+      document.body.innerText = "PKCE verifier missing.";
+      throw new Error("Missing PKCE verifier");
+    }
+
+    fetch(tokenEndpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
       body: new URLSearchParams({
         grant_type: "authorization_code",
-        client_id: CLIENT_ID,
-        code,
-        redirect_uri: REDIRECT_URI,
-        code_verifier: verifier
+        client_id: clientId,
+        code: code,
+        redirect_uri: redirectUri,
+        code_verifier: verifier   // 🔴 REQUIRED
       })
     })
-      .then(res => res.json())
+      .then(async res => {
+        const text = await res.text();
+        if (!res.ok) throw new Error(text);
+        return JSON.parse(text);
+      })
       .then(data => {
-        if (!data.access_token || !data.id_token) {
-          throw new Error("Tokens missing from Cognito response");
-        }
-
-        sessionStorage.setItem("id_token", data.id_token);
-        sessionStorage.setItem("access_token", data.access_token);
-
+        sessionStorage.setItem("access_token", data.id_token);
         window.location.href = "index.html";
+      })
+      .catch(err => {
+        console.error(err);
+        document.body.innerText = "Login failed. Check console.";
       });
 
   </script>
