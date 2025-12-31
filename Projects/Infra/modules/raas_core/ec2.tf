@@ -18,7 +18,7 @@ module "ec2_instance" {
     Terraform   = "true"
     Environment = "dev"
 
-    # REQUIRED FOR RaaS SECURITY
+    # REQUIRED FOR RaaS SECURITY updated here
     OwnerGroup = each.value.team
   }
 
