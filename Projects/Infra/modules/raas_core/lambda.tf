@@ -12,14 +12,14 @@ resource "aws_lambda_function" "lambda_function_def" {
   handler          = "index.handler"
   source_code_hash = data.archive_file.lambda_package.output_base64sha256
 
-  runtime = "nodejs20.x"
+  runtime = "nodejs16.x"
 
   environment {
     variables = {
       ENVIRONMENT = var.environment
       LOG_LEVEL   = "info"
-      GROUP_MAP = var.group_map
-      RBAC_MAP  = var.rbac_map
+      GROUP_MAP   = var.group_map
+      RBAC_MAP    = var.rbac_map
     }
   }
 
