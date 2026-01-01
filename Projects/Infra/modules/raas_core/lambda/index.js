@@ -12,15 +12,19 @@ exports.handler = async (event) => {
     // ===============================
     // AUTH INFO (JWT Authorizer)
     // ===============================
-    const claims = event?.requestContext?.authorizer?.jwt?.claims || {};
+    const claims =
+      event?.requestContext?.authorizer?.jwt?.claims || {};
 
-    // Normalize cognito:groups (string OR array → array)
+    // ---- Robust Cognito group normalization ----
     let groups = claims["cognito:groups"] || [];
+
     if (typeof groups === "string") {
-      groups = [groups];
+      // Handles:
+      // "Java-Developers"
+      // "Java-Developers,Devops-group"
+      groups = groups.split(",").map(g => g.trim());
     }
 
-    // Hard fail if no groups
     if (!Array.isArray(groups) || groups.length === 0) {
       return response(403, {
         message: "User has no Cognito group assigned"
@@ -32,19 +36,19 @@ exports.handler = async (event) => {
     const isAdmin = groups.includes(ADMIN_GROUP);
 
     // ===============================
-    // DEBUG (remove later)
+    // DEBUG (safe to remove later)
     // ===============================
     console.log("AUTH_DEBUG", {
-      groups,
-      isAdmin,
       path,
-      method
+      method,
+      groups,
+      isAdmin
     });
 
     // ===============================
     // GET /instances
     // ===============================
-    if (path.endsWith("/instances") && method === "GET") {
+    if (path.includes("/instances") && method === "GET") {
       const data = await ec2.describeInstances().promise();
       const instances = [];
 
@@ -53,6 +57,12 @@ exports.handler = async (event) => {
           const ownerTag = instance.Tags?.find(
             t => t.Key === "OwnerGroup"
           );
+
+          console.log("INSTANCE_DEBUG", {
+            instanceId: instance.InstanceId,
+            ownerTagValue: ownerTag?.Value,
+            userGroups: groups
+          });
 
           // RBAC + ABAC enforcement
           if (
@@ -75,7 +85,7 @@ exports.handler = async (event) => {
     // ===============================
     // POST /reboot
     // ===============================
-    if (path.endsWith("/reboot") && method === "POST") {
+    if (path.includes("/reboot") && method === "POST") {
       const body = JSON.parse(event.body || "{}");
       const instanceId = body.instanceId;
 
@@ -85,7 +95,6 @@ exports.handler = async (event) => {
         });
       }
 
-      // Describe instance to validate ownership
       const desc = await ec2.describeInstances({
         InstanceIds: [instanceId]
       }).promise();
@@ -103,7 +112,6 @@ exports.handler = async (event) => {
         t => t.Key === "OwnerGroup"
       );
 
-      // Authorization check
       if (
         !isAdmin &&
         (!ownerTag || !groups.includes(ownerTag.Value))
@@ -117,7 +125,6 @@ exports.handler = async (event) => {
         InstanceIds: [instanceId]
       }).promise();
 
-      // Audit log
       console.log("AUDIT_REBOOT", {
         user: claims.sub,
         groups,
