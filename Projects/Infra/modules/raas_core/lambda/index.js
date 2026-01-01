@@ -15,14 +15,27 @@ exports.handler = async (event) => {
     const claims =
       event?.requestContext?.authorizer?.jwt?.claims || {};
 
-    // ---- Robust Cognito group normalization ----
+    // ===============================
+    // FIX: Robust Cognito group parsing
+    // Handles:
+    // ["Java-Developers"]
+    // ["[Java-Developers]"]
+    // "[Java-Developers]"
+    // "[Java-Developers,Devops-group]"
+    // ===============================
     let groups = claims["cognito:groups"] || [];
 
-    if (typeof groups === "string") {
-      // Handles:
-      // "Java-Developers"
-      // "Java-Developers,Devops-group"
-      groups = groups.split(",").map(g => g.trim());
+    if (Array.isArray(groups)) {
+      groups = groups.map(g =>
+        typeof g === "string"
+          ? g.replace(/^\[|\]$/g, "").trim()
+          : g
+      );
+    } else if (typeof groups === "string") {
+      groups = groups
+        .replace(/^\[|\]$/g, "")
+        .split(",")
+        .map(g => g.trim());
     }
 
     if (!Array.isArray(groups) || groups.length === 0) {
@@ -35,9 +48,6 @@ exports.handler = async (event) => {
     const ADMIN_GROUP = "Devops-group";
     const isAdmin = groups.includes(ADMIN_GROUP);
 
-    // ===============================
-    // DEBUG (safe to remove later)
-    // ===============================
     console.log("AUTH_DEBUG", {
       path,
       method,
@@ -58,22 +68,23 @@ exports.handler = async (event) => {
             t => t.Key === "OwnerGroup"
           );
 
+          const ownerValue = ownerTag?.Value?.trim();
+
           console.log("INSTANCE_DEBUG", {
             instanceId: instance.InstanceId,
-            ownerTagValue: ownerTag?.Value,
+            ownerGroup: ownerValue,
             userGroups: groups
           });
 
-          // RBAC + ABAC enforcement
           if (
             isAdmin ||
-            (ownerTag && groups.includes(ownerTag.Value))
+            (ownerValue && groups.includes(ownerValue))
           ) {
             instances.push({
               instanceId: instance.InstanceId,
               state: instance.State?.Name,
               type: instance.InstanceType,
-              ownerGroup: ownerTag?.Value || "unknown"
+              ownerGroup: ownerValue
             });
           }
         });
@@ -112,9 +123,11 @@ exports.handler = async (event) => {
         t => t.Key === "OwnerGroup"
       );
 
+      const ownerValue = ownerTag?.Value?.trim();
+
       if (
         !isAdmin &&
-        (!ownerTag || !groups.includes(ownerTag.Value))
+        (!ownerValue || !groups.includes(ownerValue))
       ) {
         return response(403, {
           message: "Not authorized to reboot this instance"
