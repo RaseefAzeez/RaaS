@@ -49,7 +49,7 @@
         return JSON.parse(text);
       })
       .then(data => {
-        sessionStorage.setItem("access_token", data.id_token);
+        sessionStorage.setItem("access_token", data.access_token);
         window.location.href = "index.html";
       })
       .catch(err => {
