@@ -13,11 +13,18 @@ exports.handler = async (event) => {
     // AUTH INFO (JWT Authorizer)
     // ===============================
     const claims = event?.requestContext?.authorizer?.jwt?.claims || {};
-    const groups = claims["cognito:groups"] || [];
+
+    // Normalize cognito:groups (string OR array → array)
+    let groups = claims["cognito:groups"] || [];
+    if (typeof groups === "string") {
+      groups = [groups];
+    }
 
     // Hard fail if no groups
     if (!Array.isArray(groups) || groups.length === 0) {
-      return response(403, { message: "User has no Cognito group assigned" });
+      return response(403, {
+        message: "User has no Cognito group assigned"
+      });
     }
 
     // Admin group (EXACT name)
@@ -25,7 +32,7 @@ exports.handler = async (event) => {
     const isAdmin = groups.includes(ADMIN_GROUP);
 
     // ===============================
-    // DEBUG (safe – remove later)
+    // DEBUG (remove later)
     // ===============================
     console.log("AUTH_DEBUG", {
       groups,
@@ -47,7 +54,7 @@ exports.handler = async (event) => {
             t => t.Key === "OwnerGroup"
           );
 
-          // Enforce RBAC + ABAC
+          // RBAC + ABAC enforcement
           if (
             isAdmin ||
             (ownerTag && groups.includes(ownerTag.Value))
@@ -73,7 +80,9 @@ exports.handler = async (event) => {
       const instanceId = body.instanceId;
 
       if (!instanceId) {
-        return response(400, { message: "instanceId is required" });
+        return response(400, {
+          message: "instanceId is required"
+        });
       }
 
       // Describe instance to validate ownership
@@ -85,7 +94,9 @@ exports.handler = async (event) => {
         desc.Reservations?.[0]?.Instances?.[0];
 
       if (!instance) {
-        return response(404, { message: "Instance not found" });
+        return response(404, {
+          message: "Instance not found"
+        });
       }
 
       const ownerTag = instance.Tags?.find(
@@ -121,11 +132,15 @@ exports.handler = async (event) => {
     // ===============================
     // FALLBACK
     // ===============================
-    return response(404, { message: "Route not found" });
+    return response(404, {
+      message: "Route not found"
+    });
 
   } catch (err) {
     console.error("LAMBDA_ERROR", err);
-    return response(500, { error: err.message });
+    return response(500, {
+      error: err.message
+    });
   }
 };
 
