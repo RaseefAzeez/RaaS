@@ -41,6 +41,10 @@ data "aws_iam_policy_document" "raas_front_bucket_policy_document" {
 resource "aws_s3_bucket_policy" "raas_frontend_bucket_policy" {
   bucket = aws_s3_bucket.raas_frontend_bucket.id
   policy = data.aws_iam_policy_document.raas_front_bucket_policy_document.json
+
+  depends_on = [
+    aws_s3_bucket_public_access_block.raas_frontend_bucket
+  ]
 }
 
 
