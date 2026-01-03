@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - public/**
+      - Projects/Frontend/**
 
 permissions:
   id-token: write
@@ -27,4 +27,4 @@ jobs:
 
       - name: Sync frontend to S3
         run: |
-          aws s3 sync public/ s3://raas-frontend-${{ secrets.TF_ENVIRONMENT }} --delete
+          aws s3 sync Projects/Frontend/ s3://raas-frontend-${{ secrets.TF_ENVIRONMENT }} --delete
