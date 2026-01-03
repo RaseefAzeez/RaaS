@@ -6,12 +6,24 @@ resource "aws_apigatewayv2_api" "raas_api_gateway" {
   protocol_type = "HTTP"
 
   cors_configuration {
-    allow_headers  = ["Content-Type", "Authorization", "X-Amz-Date", "X-Api-Key"]
-    allow_methods  = ["GET", "POST", "OPTIONS"]
-    allow_origins  = [var.frontend_origin]
-    expose_headers = ["Authorization"]
-    max_age        = 3600
+    allow_origins = [
+      "https://d1l62wn91r29l3.cloudfront.net"
+    ]
+
+    allow_methods = [
+      "GET",
+      "POST",
+      "OPTIONS"
+    ]
+
+    allow_headers = [
+      "authorization",
+      "content-type"
+    ]
+
+    max_age = 3600
   }
+
 }
 
 resource "aws_apigatewayv2_authorizer" "raas_jwt_authorizer" {
