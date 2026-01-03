@@ -1,0 +1,30 @@
+name: Deploy Frontend to S3
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - public/**
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy_frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.TF_REGION }}
+
+      - name: Sync frontend to S3
+        run: |
+          aws s3 sync public/ s3://raas-frontend-${{ secrets.TF_ENVIRONMENT }} --delete
