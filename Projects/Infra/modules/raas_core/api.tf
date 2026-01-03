@@ -1,16 +1,16 @@
 
-#API Gateway creation
+#API Gateway creation done here
 
 resource "aws_apigatewayv2_api" "raas_api_gateway" {
   name          = "raas-${var.environment}-apigateway"
   protocol_type = "HTTP"
 
   cors_configuration {
-    allow_headers = ["Content-Type", "Authorization", "X-Amz-Date", "X-Api-Key"]
-    allow_methods = ["GET", "POST", "OPTIONS"]
-    allow_origins = [var.frontend_origin]       
+    allow_headers  = ["Content-Type", "Authorization", "X-Amz-Date", "X-Api-Key"]
+    allow_methods  = ["GET", "POST", "OPTIONS"]
+    allow_origins  = [var.frontend_origin]
     expose_headers = ["Authorization"]
-    max_age       = 3600
+    max_age        = 3600
   }
 }
 
@@ -31,11 +31,11 @@ resource "aws_apigatewayv2_authorizer" "raas_jwt_authorizer" {
 #API Gateway Lambda Integration
 
 resource "aws_apigatewayv2_integration" "raas_lambda_integration" {
-  api_id           = aws_apigatewayv2_api.raas_api_gateway.id
-  integration_type = "AWS_PROXY"
-  integration_method = "POST"
-  description = "API-Gatway Lambda-Integration"
-  integration_uri = aws_lambda_function.lambda_function_def.invoke_arn
+  api_id                 = aws_apigatewayv2_api.raas_api_gateway.id
+  integration_type       = "AWS_PROXY"
+  integration_method     = "POST"
+  description            = "API-Gatway Lambda-Integration"
+  integration_uri        = aws_lambda_function.lambda_function_def.invoke_arn
   payload_format_version = "2.0"
 }
 
