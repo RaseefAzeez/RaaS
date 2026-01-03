@@ -1,5 +1,5 @@
 
-#API Gateway creation
+#API Gateway creation processed here
 
 resource "aws_apigatewayv2_api" "raas_api_gateway" {
   name          = "raas-${var.environment}-apigateway"
