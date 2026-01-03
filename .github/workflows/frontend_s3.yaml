@@ -15,6 +15,7 @@ permissions:
 jobs:
   deploy_frontend:
     runs-on: ubuntu-latest
+    environment: infra-dev-setup
 
     steps:
       - name: Checkout repository
