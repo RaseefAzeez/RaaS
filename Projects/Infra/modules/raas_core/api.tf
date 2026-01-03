@@ -6,15 +6,9 @@ resource "aws_apigatewayv2_api" "raas_api_gateway" {
   protocol_type = "HTTP"
 
   cors_configuration {
-    allow_origins = [
-      "https://d1l62wn91r29l3.cloudfront.net"
-    ]
+    allow_origins = [var.frontend_origin]
 
-    allow_methods = [
-      "GET",
-      "POST",
-      "OPTIONS"
-    ]
+    allow_methods = ["GET", "POST", "OPTIONS"]
 
     allow_headers = [
       "authorization",
