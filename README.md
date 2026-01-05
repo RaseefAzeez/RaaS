@@ -1,4 +1,4 @@
-🎯 # Project Goal
+🎯 # **Project Goal**
 
 Reduce operational overhead caused by repetitive EC2 reboot and connectivity tickets by enabling a secure, policy-driven self-service solution.
 
