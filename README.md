@@ -11,8 +11,11 @@ Authentication is handled using Amazon Cognito, while authorization is enforced 
 **Architecture Overview**
 
 **Frontend**: Static web application hosted on Amazon S3 and delivered securely over HTTPS via Amazon CloudFront
+
 **Authentication**: OAuth2-based login using Amazon Cognito (Hosted UI + JWT tokens)
+
 **API Layer**: Amazon API Gateway (HTTP API) with JWT authorizers
+
 **Backend Logic**: AWS Lambda for request handling, authorization checks, and EC2 operations
 
 **Authorization Model:**
@@ -51,29 +54,44 @@ Frontend: HTML, Tailwind CSS, JavaScript
 <img width="1024" height="1536" alt="RaaS - folder structure" src="https://github.com/user-attachments/assets/8ca63887-f185-4958-9568-7f99c0fc4195" />
 
 
+
 🧠 **Key Learnings**
 
 IAM Identity Center is not suitable for web-based JWT authorizers with API Gateway
+
 Amazon Cognito provides a clean OAuth2 and JWT flow for web applications
+
 Combining RBAC and ABAC enables scalable, policy-driven access control
+
 CloudFront is required to provide HTTPS for S3-hosted applications using Cognito
+
 Real-world DevOps projects involve troubleshooting beyond tutorials, including JWT mismatches, CORS issues, CloudFront integration quirks, and Terraform edge cases
 
 🚀 #Future Enhancements
 
 Multi-account and multi-region EC2 support
+
 Automated group creation and dynamic role mapping
+
 Automatic EC2 tagging to eliminate manual ownership configuration
+
 Approval-based workflows for sensitive operations
+
 Scheduled and automated reboot operations
+
 Enhanced audit logging and monitoring dashboards
+
 Custom domain support using ACM and Route 53
 
 📌 **Why This Project Matters**
 
--RaaS reflects real enterprise DevOps architecture, focusing on:
+RaaS reflects real enterprise DevOps architecture, focusing on:
 -Security-first design
+
 -Least-privilege access
+
 -Serverless automation
+
 -Scalable authorization models
+
 -Infrastructure as Code and modern CI/CD practices
