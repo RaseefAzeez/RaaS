@@ -5,8 +5,7 @@ Reduce operational overhead caused by repetitive EC2 reboot and connectivity tic
 
 🧩 **Solution Overview**
 
-**RaaS** provides a web-based interface backed by a serverless AWS architecture.
-Authentication is handled using Amazon Cognito, while authorization is enforced using a combination of RBAC and ABAC implemented in AWS Lambda. Access decisions are dynamically derived from Cognito group claims and EC2 instance tags, ensuring least-privilege access at scale.
+**RaaS** provides a web-based interface backed by a serverless AWS architecture. Authentication is handled using Amazon Cognito, while authorization is enforced using a combination of RBAC and ABAC implemented in AWS Lambda. Access decisions are dynamically derived from Cognito group claims and EC2 instance tags, ensuring least-privilege access at scale.
 
 **Architecture Overview**
 
@@ -21,32 +20,47 @@ Authentication is handled using Amazon Cognito, while authorization is enforced 
 **Authorization Model:**
 
 RBAC: Cognito user groups
+
 ABAC: EC2 instance tags (OwnerGroup)
+
 Infrastructure as Code: Terraform
+
 CI/CD: GitHub Actions with OIDC-based authentication (no static AWS keys)
 
 🔐 **Security Model**
 
 No AWS credentials or Console access exposed to end users
+
 OAuth2 and JWT-based authentication
+
 Fine-grained authorization using RBAC + ABAC
+
 IAM roles scoped with least-privilege permissions
+
 All actions logged via CloudWatch for auditability
 
 ✨ **Key Features**
 
 Secure, self-service EC2 reboot capability
+
 OAuth2 authentication with Amazon Cognito
+
 RBAC and ABAC enforced using Cognito groups and EC2 tags
+
 Serverless backend using API Gateway and AWS Lambda
+
 HTTPS-enabled frontend via CloudFront and S3
+
 Automated infrastructure and deployments using Terraform and GitHub Actions
 
 🛠️ **Technologies Used**
 
 AWS Services: AWS Amplify, S3, API Gateway, Lambda, DynamoDB, SNS, CloudFormation, IAM, CloudWatch
+
 CI/CD and IaC: GitHub Actions, GitHub workflow and Cloud Formation
+
 Version Control: Git, GitHub
+
 Frontend: HTML, Tailwind CSS, JavaScript
 
 📂 **Repository Structure**
@@ -67,7 +81,7 @@ CloudFront is required to provide HTTPS for S3-hosted applications using Cognito
 
 Real-world DevOps projects involve troubleshooting beyond tutorials, including JWT mismatches, CORS issues, CloudFront integration quirks, and Terraform edge cases
 
-🚀 #Future Enhancements
+🚀 **Future Enhancements**
 
 Multi-account and multi-region EC2 support
 
@@ -86,6 +100,7 @@ Custom domain support using ACM and Route 53
 📌 **Why This Project Matters**
 
 RaaS reflects real enterprise DevOps architecture, focusing on:
+
 -Security-first design
 
 -Least-privilege access
