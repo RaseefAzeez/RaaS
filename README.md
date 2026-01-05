@@ -7,7 +7,10 @@ Reduce operational overhead caused by repetitive EC2 reboot and connectivity tic
 
 **RaaS** provides a web-based interface backed by a serverless AWS architecture. Authentication is handled using Amazon Cognito, while authorization is enforced using a combination of RBAC and ABAC implemented in AWS Lambda. Access decisions are dynamically derived from Cognito group claims and EC2 instance tags, ensuring least-privilege access at scale.
 
-**Architecture Overview**
+**Architecture Overview and Diagram**
+
+
+<img width="1536" height="1024" alt="RaaS- Arch image" src="https://github.com/user-attachments/assets/016832a6-fa88-4df6-bea5-f645889915aa" />
 
 **Frontend**: Static web application hosted on Amazon S3 and delivered securely over HTTPS via Amazon CloudFront
 
