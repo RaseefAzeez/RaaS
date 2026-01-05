@@ -1,91 +1,49 @@
 🎯 **Project Goal**
 
+**RaaS- Reboot As A Service** - Simple, Secure EC2 Management — List, Check, and Reboot! 
 Reduce operational overhead caused by repetitive EC2 reboot and connectivity tickets by enabling a secure, policy-driven self-service solution.
 
 🧩 **Solution Overview**
 
-RaaS provides a web-based interface backed by a serverless AWS architecture.
+**RaaS** provides a web-based interface backed by a serverless AWS architecture.
 Authentication is handled using Amazon Cognito, while authorization is enforced using a combination of RBAC and ABAC implemented in AWS Lambda. Access decisions are dynamically derived from Cognito group claims and EC2 instance tags, ensuring least-privilege access at scale.
 
 **Architecture Overview**
 
-Frontend: Static web application hosted on Amazon S3 and delivered securely over HTTPS via Amazon CloudFront
+**Frontend**: Static web application hosted on Amazon S3 and delivered securely over HTTPS via Amazon CloudFront
+**Authentication**: OAuth2-based login using Amazon Cognito (Hosted UI + JWT tokens)
+**API Layer**: Amazon API Gateway (HTTP API) with JWT authorizers
+**Backend Logic**: AWS Lambda for request handling, authorization checks, and EC2 operations
 
-Authentication: OAuth2-based login using Amazon Cognito (Hosted UI + JWT tokens)
-
-API Layer: Amazon API Gateway (HTTP API) with JWT authorizers
-
-Backend Logic: AWS Lambda for request handling, authorization checks, and EC2 operations
-
-Authorization Model:
-
+**Authorization Model:**
 RBAC: Cognito user groups
-
 ABAC: EC2 instance tags (OwnerGroup)
-
 Infrastructure as Code: Terraform
-
 CI/CD: GitHub Actions with OIDC-based authentication (no static AWS keys)
 
 🔐 **Security Model**
 
 No AWS credentials or Console access exposed to end users
-
 OAuth2 and JWT-based authentication
-
 Fine-grained authorization using RBAC + ABAC
-
 IAM roles scoped with least-privilege permissions
-
 All actions logged via CloudWatch for auditability
 
 ✨ **Key Features**
 
 Secure, self-service EC2 reboot capability
-
 OAuth2 authentication with Amazon Cognito
-
 RBAC and ABAC enforced using Cognito groups and EC2 tags
-
 Serverless backend using API Gateway and AWS Lambda
-
 HTTPS-enabled frontend via CloudFront and S3
-
 Automated infrastructure and deployments using Terraform and GitHub Actions
 
 🛠️ **Technologies Used**
 
-AWS Services
-
-Amazon Cognito
-
-API Gateway (HTTP API)
-
-AWS Lambda
-
-Amazon EC2
-
-Amazon S3
-
-Amazon CloudFront
-
-AWS IAM
-
-Amazon CloudWatch
-
-DevOps & Tooling
-
-Terraform
-
-GitHub Actions (OIDC-based CI/CD)
-
-Security Concepts
-
-OAuth2
-
-JWT
-
-RBAC & ABAC
+AWS Services: AWS Amplify, S3, API Gateway, Lambda, DynamoDB, SNS, CloudFormation, IAM, CloudWatch
+CI/CD and IaC: GitHub Actions, GitHub workflow and Cloud Formation
+Version Control: Git, GitHub
+Frontend: HTML, Tailwind CSS, JavaScript
 
 📂 **Repository Structure**
 <img width="1024" height="1536" alt="RaaS - folder structure" src="https://github.com/user-attachments/assets/8ca63887-f185-4958-9568-7f99c0fc4195" />
