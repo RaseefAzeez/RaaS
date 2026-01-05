@@ -7,7 +7,7 @@ Reduce operational overhead caused by repetitive EC2 reboot and connectivity tic
 RaaS provides a web-based interface backed by a serverless AWS architecture.
 Authentication is handled using Amazon Cognito, while authorization is enforced using a combination of RBAC and ABAC implemented in AWS Lambda. Access decisions are dynamically derived from Cognito group claims and EC2 instance tags, ensuring least-privilege access at scale.
 
-🏗️ Architecture Overview
+Architecture Overview
 
 Frontend: Static web application hosted on Amazon S3 and delivered securely over HTTPS via Amazon CloudFront
 
@@ -98,6 +98,7 @@ RBAC & ABAC
 ├── .github/workflows/      # CI/CD pipelines
 └── README.md
 
+
 🧠 Key Learnings
 
 IAM Identity Center is not suitable for web-based JWT authorizers with API Gateway
@@ -128,16 +129,16 @@ Custom domain support using ACM and Route 53
 
 📌 Why This Project Matters
 
-RaaS reflects real enterprise DevOps architecture, focusing on:
+-RaaS reflects real enterprise DevOps architecture, focusing on:
 
-Security-first design
+-Security-first design
 
-Least-privilege access
+-Least-privilege access
 
-Serverless automation
+-Serverless automation
 
-Scalable authorization models
+-Scalable authorization models
 
-Infrastructure as Code and modern CI/CD practices
+-Infrastructure as Code and modern CI/CD practices
 
 This is not a tutorial-based project—it mirrors challenges and design decisions faced in production environments.
