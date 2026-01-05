@@ -12,6 +12,8 @@ Reduce operational overhead caused by repetitive EC2 reboot and connectivity tic
 
 <img width="1536" height="1024" alt="RaaS- Arch image" src="https://github.com/user-attachments/assets/016832a6-fa88-4df6-bea5-f645889915aa" />
 
+
+
 **Frontend**: Static web application hosted on Amazon S3 and delivered securely over HTTPS via Amazon CloudFront
 
 **Authentication**: OAuth2-based login using Amazon Cognito (Hosted UI + JWT tokens)
