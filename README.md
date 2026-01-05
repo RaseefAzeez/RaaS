@@ -1,13 +1,13 @@
-🎯 Project Goal
+🎯 #Project Goal
 
 Reduce operational overhead caused by repetitive EC2 reboot and connectivity tickets by enabling a secure, policy-driven self-service solution.
 
-🧩 Solution Overview
+🧩 #Solution Overview
 
 RaaS provides a web-based interface backed by a serverless AWS architecture.
 Authentication is handled using Amazon Cognito, while authorization is enforced using a combination of RBAC and ABAC implemented in AWS Lambda. Access decisions are dynamically derived from Cognito group claims and EC2 instance tags, ensuring least-privilege access at scale.
 
-Architecture Overview
+#Architecture Overview
 
 Frontend: Static web application hosted on Amazon S3 and delivered securely over HTTPS via Amazon CloudFront
 
@@ -27,7 +27,7 @@ Infrastructure as Code: Terraform
 
 CI/CD: GitHub Actions with OIDC-based authentication (no static AWS keys)
 
-🔐 Security Model
+🔐 #Security Model
 
 No AWS credentials or Console access exposed to end users
 
@@ -53,7 +53,7 @@ HTTPS-enabled frontend via CloudFront and S3
 
 Automated infrastructure and deployments using Terraform and GitHub Actions
 
-🛠️ Technologies Used
+🛠️ #Technologies Used
 
 AWS Services
 
@@ -87,7 +87,7 @@ JWT
 
 RBAC & ABAC
 
-📂 Repository Structure
+📂 #Repository Structure
 .
 ├── envs/                   # Environment-specific Terraform configs
 ├── modules/                # Reusable Terraform modules
@@ -99,7 +99,7 @@ RBAC & ABAC
 └── README.md
 
 
-🧠 Key Learnings
+🧠 #Key Learnings
 
 IAM Identity Center is not suitable for web-based JWT authorizers with API Gateway
 
@@ -111,7 +111,7 @@ CloudFront is required to provide HTTPS for S3-hosted applications using Cognito
 
 Real-world DevOps projects involve troubleshooting beyond tutorials, including JWT mismatches, CORS issues, CloudFront integration quirks, and Terraform edge cases
 
-🚀 Future Enhancements
+🚀 #Future Enhancements
 
 Multi-account and multi-region EC2 support
 
