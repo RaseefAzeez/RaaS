@@ -88,56 +88,7 @@ JWT
 RBAC & ABAC
 
 📂 **Repository Structure**
-RAAS/
-├── .github/
-│   └── workflows/                 # CI/CD pipelines (Terraform + Frontend deploy)
-│
-├── Projects/
-│   └── Frontend/                  # Static frontend application
-│       ├── index.html             # Main UI
-│       ├── callback.html          # OAuth2 redirect handler
-│       ├── config.js              # Cognito & API configuration
-│       ├── getdetails.js           # API interaction logic
-│       └── tailwind.css            # Styling
-│
-├── Infra/
-│   ├── bootstrap/                 # One-time foundational infrastructure
-│   │   ├── backend.tf             # Terraform remote state backend
-│   │   └── bootstrap.tf           # State bucket, IAM OIDC role, base resources
-│   │
-│   └── envs/                      # Environment-specific infrastructure
-│       ├── dev/
-│       │   ├── backend.tf
-│       │   ├── main.tf
-│       │   ├── variables.tf
-│       │   └── dev.tfvars
-│       │
-│       └── prod/
-│           ├── backend.tf
-│           ├── main.tf
-│           ├── variables.tf
-│           └── prod.tfvars
-│
-├── modules/                       # Reusable Terraform modules
-│   ├── frontend_s3/
-│   │   ├── s3.tf                  # S3 bucket, policy, website configuration
-│   │   ├── variables.tf           # Module inputs
-│   │   └── output.tf              # Bucket outputs
-│   │
-│   └── raas_core/
-│       ├── api.tf                 # API Gateway + JWT authorizer
-│       ├── ec2.tf                 # EC2 instances and tagging
-│       ├── iam.tf                 # IAM roles and policies
-│       ├── lambda.tf              # Lambda resources
-│       ├── sns.tf                 # Notifications (optional)
-│       ├── main.tf                # Module wiring
-│       ├── variables.tf           # Inputs (env, RBAC, mappings)
-│       ├── outputs.tf             # Exposed outputs
-│       └── lambda/
-│           └── index.js            # RaaS authorization & reboot logic
-│
-├── .gitignore
-└── debug.txt
+<img width="1024" height="1536" alt="RaaS - folder structure" src="https://github.com/user-attachments/assets/8ca63887-f185-4958-9568-7f99c0fc4195" />
 
 
 🧠 **Key Learnings**
